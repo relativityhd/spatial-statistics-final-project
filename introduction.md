@@ -1,0 +1,5 @@
+# Introduction
+Arsenic contamination of groundwater has created a public health crisis in Bangladesh. It affects millions of people who rely on the contaminated water for drinking and domestic purposes.
+The extent of this contamination varies widely across the country, with some areas having dangerously high levels (https://doi.org/10.1016/j.agee.2005.08.034).
+Because of the number of people who rely on groundwater and the health risks associated with arsenic exposure, there is a high demand for methods to spatially predict the probability that arsenic concentrations will exceed a safety threshold.
+Geostatistical indicator techniques provide a powerful approach to this challenge, allowing the assessment and mapping of the risk of arsenic contamination above critical levels such as 10 µg/l and 50 µg/l. Specifically, Indicator Simulation can be used to generate probabilistic maps of these higher probabilities. This provides valuable information for risk assessment and mitigation strategies.

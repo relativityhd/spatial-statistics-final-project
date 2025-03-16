@@ -149,7 +149,15 @@ window.Quarto = {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#dataset-and-area-of-interest" id="toc-dataset-and-area-of-interest" class="nav-link" data-scroll-target="#dataset-and-area-of-interest">Dataset and area of interest</a></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#variogram" id="toc-variogram" class="nav-link" data-scroll-target="#variogram">Variogram</a></li>
+  <li><a href="#kriging" id="toc-kriging" class="nav-link" data-scroll-target="#kriging">Kriging</a>
+  <ul class="collapse">
+  <li><a href="#covariance-and-interpolations-weights" id="toc-covariance-and-interpolations-weights" class="nav-link" data-scroll-target="#covariance-and-interpolations-weights">Covariance and Interpolations weights</a></li>
+  <li><a href="#simple-kriging" id="toc-simple-kriging" class="nav-link" data-scroll-target="#simple-kriging">Simple Kriging</a></li>
+  </ul></li>
+  </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#discussion-an-comparison-to-ordinary-kriging" id="toc-discussion-an-comparison-to-ordinary-kriging" class="nav-link" data-scroll-target="#discussion-an-comparison-to-ordinary-kriging">Discussion an comparison to Ordinary Kriging</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -1074,7 +1082,79 @@ Figure&nbsp;1: arsenic concentration in Bangladesh
 </section>
 <section id="methods" class="level1">
 <h1>Methods</h1>
-<p>ganz viele tolle formeln aus <span class="citation" data-cites="schlaues_buch">(<a href="#ref-schlaues_buch" role="doc-biblioref">Benndorf and Wiesbaden 2023</a>)</span></p>
+<section id="variogram" class="level2">
+<h2 class="anchored" data-anchor-id="variogram">Variogram</h2>
+<p>The Semivarinace is defined as followed:</p>
+<p><span class="math display">
+γ(h)=\frac{1}{2N(h)} \sum_{i=1}^{N}(Z(x_i+h)−Z(x_i))^2
+</span></p>
+<ul>
+<li>where <span class="math inline">h</span> is the distance between points in the lag class</li>
+<li><span class="math inline">N(h)</span> is the number of points with the distance h (Number of points per lag class).</li>
+<li><span class="math inline">x_i</span> is the position of the i-th point and <span class="math inline">Z</span> is the attribute value at the position <span class="math inline">x_i</span> <span class="citation" data-cites="schlaues_buch">(<a href="#ref-schlaues_buch" role="doc-biblioref">Benndorf and Wiesbaden 2023</a>)</span></li>
+</ul>
+<p>The formula for the spherical variogram model is given by: <span class="math display">
+\gamma(h) =
+\begin{cases}
+C_0 + C \left[ \frac{3h}{2a} - \frac{1}{2} \left( \frac{h}{a} \right)^3 \right] &amp; \text{if } 0 \leq h \leq a \\
+C_0 + C &amp; \text{if } h &gt; a
+\end{cases}
+</span></p>
+<p>where: - <span class="math inline">h</span> is the lag distance, - <span class="math inline">C_0</span> is the nugget, - <span class="math inline">C</span> is the sill minus the nugget, - <span class="math inline">a</span> is the range.</p>
+<p>Modified formula to include <span class="math inline">C_0</span> fo <span class="math inline">h=0</span></p>
+</section>
+<section id="kriging" class="level2">
+<h2 class="anchored" data-anchor-id="kriging">Kriging</h2>
+<section id="covariance-and-interpolations-weights" class="level3">
+<h3 class="anchored" data-anchor-id="covariance-and-interpolations-weights">Covariance and Interpolations weights</h3>
+<p>The Covariance is derived from the Semmivariance:</p>
+<p><span class="math display">
+Cov(h) =
+\begin{cases}
+C - C \left[ \frac{3h}{2a} - \frac{1}{2} \left( \frac{h}{a} \right)^3 \right] &amp; \text{if } 0 \leq h \leq a \\
+0 &amp; \text{if } h &gt; a
+\end{cases}
+</span></p>
+<p>The Weigths for the Kriging are Calulated via the Covariance for each interpolation point:</p>
+<p><span class="math display">
+\lambda = \mathbf{C^{-1} \cdot c_0}
+</span></p>
+<p>the matrizes looks like that:</p>
+<p><span class="math display">
+\lambda =
+\begin{bmatrix}
+    \lambda_1 \\
+    \lambda_2 \\
+    \vdots \\
+    \lambda_2
+\end{bmatrix}, \quad
+\mathbf{C} =
+\begin{bmatrix}
+    \text{Cov}[x_1, x_1] &amp; \text{Cov}[x_1, x_2] &amp; \cdots &amp; \text{Cov}[x_1, x_n] \\
+    \text{Cov}[x_2, x_1] &amp; \text{Cov}[x_2, x_2] &amp; \cdots &amp; \text{Cov}[x_2, x_n] \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    \text{Cov}[x_n, x_1] &amp; \text{Cov}[x_n, x_2] &amp; \cdots &amp; \text{Cov}[x_n, x_n]
+\end{bmatrix}, \quad
+\mathbf{c}_0 =
+\begin{bmatrix}
+    \text{Cov}(x_1, x_0) \\
+    \text{Cov}(x_2, x_0) \\
+    \vdots \\
+    \text{Cov}(x_n, x_0)
+\end{bmatrix}
+</span></p>
+</section>
+<section id="simple-kriging" class="level3">
+<h3 class="anchored" data-anchor-id="simple-kriging">Simple Kriging</h3>
+<p><span class="math display">
+Z^*_{SK}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i) + \lambda_m \cdot m
+</span></p>
+<p><span class="math display">with</span></p>
+<p><span class="math display">
+\lambda_m = 1 - \sum_{i=0}^{n} \lambda_i.
+</span></p>
+</section>
+</section>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>

@@ -3264,6 +3264,10 @@ window.Quarto = {
   <li><a href="#ordinary-kriging" id="toc-ordinary-kriging" class="nav-link" data-scroll-target="#ordinary-kriging">Ordinary Kriging</a></li>
   <li><a href="#indicator-kriging" id="toc-indicator-kriging" class="nav-link" data-scroll-target="#indicator-kriging">Indicator Kriging</a></li>
   </ul></li>
+  <li><a href="#geostatistical-simulation" id="toc-geostatistical-simulation" class="nav-link" data-scroll-target="#geostatistical-simulation">Geostatistical Simulation</a>
+  <ul class="collapse">
+  <li><a href="#sequential-indicator-simulation" id="toc-sequential-indicator-simulation" class="nav-link" data-scroll-target="#sequential-indicator-simulation">Sequential Indicator Simulation</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#discussion-an-comparison-to-ordinary-kriging" id="toc-discussion-an-comparison-to-ordinary-kriging" class="nav-link" data-scroll-target="#discussion-an-comparison-to-ordinary-kriging">Discussion an comparison to Ordinary Kriging</a></li>
@@ -4230,13 +4234,13 @@ C_1 - C_1 \left[ \frac{3h}{2a} - \frac{1}{2} \left( \frac{h}{a} \right)^3 \right
 <section id="kriging" class="level2">
 <h2 class="anchored" data-anchor-id="kriging">Kriging</h2>
 <p>Krigin as an interpolation technique from the field of geostatistics that uses distance and correlation between the sample points to find the best estimator. Kriging meets the conditions to be the Best Linear Unbiased Estimator (BLUE).</p>
-<p><em>“Kriging is basically a generalization of minimum mean square error estimation taking into account spatial correlation”</em> [sagar2018]</p>
+<p><em>“Kriging is basically a generalization of minimum mean square error estimation taking into account spatial correlation”</em> <span class="citation" data-cites="sagar2018">(<a href="#ref-sagar2018" role="doc-biblioref">Sagar, Cheng, and Agterberg 2018</a>)</span></p>
 <p>Kriging is based on the work by the south african miner Danie G. Krige. Several variations of Kriging exists. We discusse the simplest form Simple Kriging, Ordinary Krigin, and Indicator Krigin in this chapter.</p>
 <p>In general the estimaton of the attribute value <span class="math inline">\(Z^*(\mathbf{x_0})\)</span> at the interpolation location <span class="math inline">\(\mathbf{x_0}\)</span> is calculated with the weighted mean from the sourrounding points. The weights are based on the variogram modell and thus on the correlation between datapoints.</p>
 <p><span class="math display">\[
-Z^*_{ok}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i)
+Z^*_{OK}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i)
 \]</span></p>
-<p>This can be demonstrated with the Ordinary Kringing estimator for example. Where <span class="math inline">\(n\leq N\)</span> is a subset of points from the observations closest to the interpolation location. z is the attribut value from the ith observation, and <span class="math inline">\(\lambda_i\)</span> is the weight determined by solving an equation system of the covariance (see next section [sagar2018])</p>
+<p>This can be demonstrated with the Ordinary Kringing estimator for example. Where <span class="math inline">\(n\leq N\)</span> is a subset of points from the observations closest to the interpolation location. z is the attribut value from the ith observation, and <span class="math inline">\(\lambda_i\)</span> is the weight determined by solving an equation system of the covariance (see next section <span class="citation" data-cites="sagar2018">(<a href="#ref-sagar2018" role="doc-biblioref">Sagar, Cheng, and Agterberg 2018</a>)</span>)</p>
 <section id="simple-kriging" class="level3">
 <h3 class="anchored" data-anchor-id="simple-kriging">Simple Kriging</h3>
 <p>The Weigths for the Kriging are Calulated via the Covariance for each interpolation point:</p>
@@ -4268,8 +4272,15 @@ Z^*_{ok}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i)
 \end{bmatrix}
 \]</span></p>
 <p>The estimator for <span class="math inline">\(\mathbf{x_0}\)</span> is calculated like:</p>
-<p><span class="math display">\[Z^*_{SK}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot (z(x_i) -m) + m\]</span></p>
-<p>$ $ <span class="math display">\[Z^*_{SK}(x_0) = \lambda^{T} \cdot (\mathbf{Z} -m) + m\]</span></p>
+<p><span class="math display">\[\begin{align*}
+
+Z^*_{SK}(x_0) &amp;= \sum_{i=0}^{n} \lambda_i \cdot (z(x_i) - m) + m \\
+
+\\
+\Leftrightarrow \ \
+
+Z^*_{SK}(x_0) &amp;= \lambda^{T} \cdot (\mathbf{Z} - m) + m
+\end{align*}\]</span></p>
 <p>The last line is the matrix notation that can be used in python for a faster implementation of the operations. Note that <span class="math inline">\(m=m(x)=constant\)</span> is the mean of <span class="math inline">\(Z\)</span> in the study area</p>
 </section>
 <section id="ordinary-kriging" class="level3">
@@ -4310,15 +4321,26 @@ Z^*_{ok}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i)
 \]</span></p>
 <p>From <span class="math inline">\(\lambda = \mathbf{C^{-1} \cdot c_0}\)</span> the weight are calculated.</p>
 <p>The estimate at every <span class="math inline">\({x_0}\)</span> is calculated with:</p>
-<p><span class="math display">\[
-Z^*_{ok}(x_0) = \sum_{i=0}^{n} \lambda_i \cdot z(x_i)
-\]</span></p>
+<p><span class="math display">\[\begin{align*}
+Z^*_{OK}(x_0) &amp;= \sum_{i=0}^{n} \lambda_i \cdot z(x_i) \\
+\end{align*}\]</span></p>
 <p>or the matrix representation</p>
-<p>$ $ <span class="math display">\[Z^*_{SK}(x_0) = \lambda^{T} \cdot \mathbf{Z}\]</span></p>
-<p>With <span class="math inline">\(\mathbf{Z}\)</span> beeing the list of all observed values and <span class="math inline">\(\lambda^{T}\)</span> the corresponding weights both resulting on one scalar value <span class="math inline">\(Z^*_{SK}(x_0)\)</span>.</p>
+<p><span class="math display">\[\begin{align*}
+\Leftrightarrow \
+Z^*_{OK}(x_0) &amp;= \lambda^{T} \cdot \mathbf{Z}
+
+\end{align*}\]</span>\end{align*} With <span class="math inline">\(\mathbf{Z}\)</span> beeing the list of all observed values and <span class="math inline">\(\lambda^{T}\)</span> the corresponding weights both resulting in one scalar value <span class="math inline">\(Z^*_{OK}(x_0)\)</span>.</p>
 </section>
 <section id="indicator-kriging" class="level3">
 <h3 class="anchored" data-anchor-id="indicator-kriging">Indicator Kriging</h3>
+<p>…</p>
+</section>
+</section>
+<section id="geostatistical-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="geostatistical-simulation">Geostatistical Simulation</h2>
+<section id="sequential-indicator-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="sequential-indicator-simulation">Sequential Indicator Simulation</h3>
+<p>…</p>
 </section>
 </section>
 </section>
@@ -4342,6 +4364,9 @@ Hossain, M. F. 2006. <span>“Arsenic Contamination in Bangladesh—an Overview.
 </div>
 <div id="ref-Nickson1998" class="csl-entry" role="listitem">
 Nickson, R, J McArthur, W Burgess, K M Ahmed, P Ravenscroft, and M Rahman. 1998. <span>“Arsenic Poisoning of Bangladesh Groundwater.”</span> <em>Nature</em> 395 (6700): 338.
+</div>
+<div id="ref-sagar2018" class="csl-entry" role="listitem">
+Sagar, Daya, Qiuming Cheng, and Frits Agterberg. 2018. <em>Handbook of Mathematical Geosciences: Fifty Years of IAMG</em>. Springer Nature. <a href="https://doi.org/10.1007/978-3-319-78999-6">https://doi.org/10.1007/978-3-319-78999-6</a>.
 </div>
 </div></section></div></main>
 <!-- /main column -->
